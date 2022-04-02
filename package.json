@@ -1,0 +1,22 @@
+{
+  "name": "nomadzoom",
+  "version": "1.0.0",
+  "description": "nomadZoom 클론코딩 웹소켓과 웹 RTC 배우기",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GUAJEGUICHAN/nomadZoom.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GUAJEGUICHAN/nomadZoom/issues"
+  },
+  "homepage": "https://github.com/GUAJEGUICHAN/nomadZoom#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
