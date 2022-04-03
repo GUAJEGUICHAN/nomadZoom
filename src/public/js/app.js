@@ -1,5 +1,8 @@
 //프론트
 
+const messageList = document.querySelector("ul")
+const messageForm = document.querySelector("form")
+
 //아래처럼 주소를 설정해야 모바일에서도 웹소켓 서버 주소를 입력할 수 있다. 
 const socket = new WebSocket(`ws://${window.location.host}`);
 
@@ -15,6 +18,11 @@ socket.addEventListener("close", () => {
   console.log("Disconnected from Server ❌");
 });
 
-setTimeout(() => {
-    socket.send("hello from the browser!");
-}, 5000);
+function handleSubmit(event){
+    event.preventDefault();
+    const input = messageForm.querySelector("input")
+    socket.send(input.value)
+    input.value=""
+}
+
+messageForm.addEventListener("submit",handleSubmit)
