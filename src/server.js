@@ -26,11 +26,13 @@ wss.on("connection", (socket) => {
   
   //클라이언트에서 message를 전송했을 때 아래 작동
   socket.on("message", (message) => {
-    console.log(message);
+    console.log(message.toString());
   });
   
   //서버에서 클라이언트에게 보낸다. 1회성이다.
-  socket.send("hello!!!");
+  socket.send("hello1");
+  socket.send("hello2");
+  socket.send("hello3");
 });
 
 server.listen(3000, handleListen);
