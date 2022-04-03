@@ -33,11 +33,19 @@ wss.on("connection", (socket) => {
         switch (type){
             case "nickname":
                 socket["nickname"] = payload
-                    socket.send(payload+"로 닉네임이 설정되었습니당")
+                socket.send(JSON.stringify(
+                    {
+                        type:"alertClient",
+                        payload:payload.toString()
+                    }
+                ))
                 break;
             case "newMessage":
                 sockets.forEach(aSocket=>{
-                    aSocket.send(socket["nickname"]+": "+ payload.toString())
+                    aSocket.send(JSON.stringify({
+                        type:"newMessageClient",
+                        payload:socket["nickname"]+": "+ payload.toString()
+                    }))
                 })
                 break;
             default:

@@ -1,6 +1,6 @@
 //프론트
 
-const messageList = document.querySelector("ul")
+const messageList = document.getElementById("chatRoom")
 const nicknameForm = document.getElementById("nickname")
 const messageForm = document.getElementById("message")
 
@@ -12,7 +12,23 @@ socket.addEventListener("open", () => {
 });
 
 socket.addEventListener("message", (message) => {
-  console.log( message.data);
+  // console.log(message)
+  const {type, payload} = JSON.parse(message.data)
+
+  switch (type){
+    case "alertClient":
+      alert(payload+"로 닉네임이 변경되었습니다")
+      break;
+    case "newMessageClient":
+      const li = document.createElement("li")
+      li.innerText = payload
+      messageList.appendChild(li)
+      break;
+  }
+
+  // const li = document.createElement('li')
+  // li.innerText(message)
+  // console.log( message.data);
 });
 
 socket.addEventListener("close", () => {
