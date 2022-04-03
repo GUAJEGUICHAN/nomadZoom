@@ -17,20 +17,24 @@ const handleListen = () => console.log(`Listening on http://localhost:3000`);
 const server = http.createServer(app);
 const wss = new WebSocket.Server({server});
 
-function onSocketMessage({socket, message}){
+function onSocketMessage({sockets, message}){
     // console.log(message)
-    socket.send(message.toString()+" from Server")
+    sockets.forEach(aSocket => {
+        aSocket.send(message.toString()+" from Server")
+    });
+    // socket.send(message.toString()+" from Server")
 }
 
+const sockets =[]
 //웹소켓이 연결될때 아래 함수 작동
 wss.on("connection", (socket) => {
     console.log("Connected to Browser ✅");
-
+    sockets.push(socket)
     //클라이언트에서 서버가 끊겼을 때 아래 작동
     socket.on("close", () => console.log("Disconnected from the Browser ❌"));
 
     //클라이언트에서 message를 전송했을 때 아래 작동
-    socket.on("message",(message)=> {onSocketMessage({socket,message})})
+    socket.on("message",(message)=> {onSocketMessage({sockets,message})})
 
     //서버에서 클라이언트에게 보낸다. 1회성이다.
     socket.send("hello1");
