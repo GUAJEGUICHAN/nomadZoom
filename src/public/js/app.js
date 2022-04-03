@@ -1,7 +1,8 @@
 //프론트
 
 const messageList = document.querySelector("ul")
-const messageForm = document.querySelector("form")
+const nicknameForm = document.getElementById("nickname")
+const messageForm = document.getElementById("message")
 
 //아래처럼 주소를 설정해야 모바일에서도 웹소켓 서버 주소를 입력할 수 있다. 
 const socket = new WebSocket(`ws://${window.location.host}`);
@@ -11,7 +12,7 @@ socket.addEventListener("open", () => {
 });
 
 socket.addEventListener("message", (message) => {
-  console.log("New message: ", message.data);
+  console.log( message.data);
 });
 
 socket.addEventListener("close", () => {
@@ -21,8 +22,23 @@ socket.addEventListener("close", () => {
 function handleSubmit(event){
     event.preventDefault();
     const input = messageForm.querySelector("input")
-    socket.send(input.value)
+    const data ={
+      type:"newMessage",
+      payload:input.value
+    }
+    socket.send(JSON.stringify(data))
     input.value=""
 }
 
+function handleNickNameSubmit(event){
+  event.preventDefault();
+  const input = nicknameForm.querySelector("input")
+  const data ={
+    type:"nickname",
+    payload:input.value
+  }
+  socket.send(JSON.stringify(data))
+}
+
 messageForm.addEventListener("submit",handleSubmit)
+nicknameForm.addEventListener("submit",handleNickNameSubmit)

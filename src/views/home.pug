@@ -12,7 +12,11 @@ html(lang="en")
             h1 Noom
         main
             ul 
-                form
+                form#nickname
+                    input(type="text", placeholder="write Your Nickname" required)
+                    button Send
+            ul 
+                form#message
                     input(type="text", placeholder="write a message" required)
                     button Send
 
