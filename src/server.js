@@ -25,7 +25,7 @@ wsServer.on("connection",(socket)=>{
     socket.on("enterRoom",(roomName,newName,done)=>{//foreach를 써보자
         socket.join(roomName)
         socket["nickname"]= newName;
-        socket.to(roomName).emit("welcome",`${socket["nickname"]}님이 입장했습니다.`)//왜 welcome이 안뜨지
+        socket.to(roomName).emit("welcome",`${socket["nickname"]}`)//왜 welcome이 안뜨지
         done();
         // done으로 해당 클라이언트 웹페이지 변경
     })
@@ -36,11 +36,11 @@ wsServer.on("connection",(socket)=>{
         done();
     })
 
-    // socket.on("disconnecting",()=>{
-    //     socket.rooms.forEach((room)=>{
-    //         socket.to(room).emit("bye",socket.nickname)
-    //     })
-    // })
+    socket.on("disconnecting",()=>{
+        socket.rooms.forEach((room)=>{
+            socket.to(room).emit("bye",socket.nickname)
+        })
+    })
 
     //닉네임 변경
     // socket.on("nickname",(nickname,room,done)=>{

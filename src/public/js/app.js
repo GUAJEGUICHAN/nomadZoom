@@ -10,6 +10,13 @@ const message = document.getElementById("message")
 const chatBox = document.getElementById("chatbox")
 const chat = document.getElementById("chat")
 
+// document.getElementById("chatbox").scrollTop = document.getElementById("chatbox").scrollHeight;
+// chatBox.scrollTop = chatBox.scrollHeight;
+// chatBox.scrollTo(0,chatBox.scrollHeight)
+// console.log(chatBox.scrollHeight)
+
+// window.scrollTo(0,document.body.scrollHeight);
+
 room.hidden = true
 chatBox.hidden = false
 
@@ -69,11 +76,12 @@ message.addEventListener("submit", (event)=>{
   const input = message.querySelector("input")
   const messageContent = input.value;
   socket.emit("newMessage",messageContent,roomName,updateChat)
+  chatBox.scrollTop = chatBox.scrollHeight;
 })
 
 socket.on("welcome",(msg)=>{
   const li = document.createElement("li");
-  li.innerText = msg
+  li.innerText = "[안내] : "+msg+"님이 입장했습니다."
   chat.appendChild(li);
 })
 
@@ -81,4 +89,12 @@ socket.on("newMessage",(msg)=>{
   const li = document.createElement("li");
   li.innerText = msg
   chat.appendChild(li);
+  chatBox.scrollTop = chatBox.scrollHeight;
+})
+
+socket.on("bye",(nName)=>{
+  const li = document.createElement("li");
+  li.innerText = "[안내] : "+nName+"님이 채팅방을 나갔습니다."
+  chat.appendChild(li);
+  chatBox.scrollTop = chatBox.scrollHeight;
 })
