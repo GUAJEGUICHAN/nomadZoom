@@ -1,60 +1,84 @@
 //프론트
 
-const messageList = document.getElementById("chatRoom")
-const nicknameForm = document.getElementById("nickname")
-const messageForm = document.getElementById("message")
+// const main = document.querySelector("main")
+const welcome = document.getElementById("welcome")
+const room = document.getElementById("room");
+const enterRoom = welcome.querySelector("form")
+const header = document.querySelector("header")
+const nickname = document.getElementById("nickname")
+const message = document.getElementById("message")
+const chatBox = document.getElementById("chatbox")
+const chat = document.getElementById("chat")
 
-//아래처럼 주소를 설정해야 모바일에서도 웹소켓 서버 주소를 입력할 수 있다. 
-const socket = new WebSocket(`ws://${window.location.host}`);
+room.hidden = true
+chatBox.hidden = false
 
-socket.addEventListener("open", () => {
-  console.log("Connected to Server ✅");
-});
+//socket.io는 외부 링크에서 가져와야한다.
+const socket = io();
 
-socket.addEventListener("message", (message) => {
-  // console.log(message)
-  const {type, payload} = JSON.parse(message.data)
+let roomName;
 
-  switch (type){
-    case "alertClient":
-      alert(payload+"로 닉네임이 변경되었습니다")
-      break;
-    case "newMessageClient":
-      const li = document.createElement("li")
-      li.innerText = payload
-      messageList.appendChild(li)
-      break;
-  }
+//div 바꾸기, 타이틀 넣기
+function showRoom(){
+  welcome.hidden=true;
+  room.hidden =false;
 
-  // const li = document.createElement('li')
-  // li.innerText(message)
-  // console.log( message.data);
-});
+  const title = header.querySelector("h1")
+  title.innerText = roomName + " 채팅방";
 
-socket.addEventListener("close", () => {
-  console.log("Disconnected from Server ❌");
-});
-
-function handleSubmit(event){
-    event.preventDefault();
-    const input = messageForm.querySelector("input")
-    const data ={
-      type:"newMessage",
-      payload:input.value
-    }
-    socket.send(JSON.stringify(data))
-    input.value=""
+  // newNickname = prompt("닉네임을 입력해주세요")
+  // socket.emit("nickname",roomName,showAlelrt);
 }
 
-function handleNickNameSubmit(event){
+function showAlelrt(){
+  // nickname.hidden = true;
+  console.log(`이름이 변경되었습니다.`)
+}
+
+function updateChat(){
+  const li = document.createElement("li");
+  const input = message.querySelector("input")
+  const messageContent = input.value;
+  li.innerText = "You : " + messageContent;
+  chat.appendChild(li);
+  input.value=""
+}
+
+//input값 socket에 보내기
+enterRoom.addEventListener("submit",(event)=>{
   event.preventDefault();
-  const input = nicknameForm.querySelector("input")
-  const data ={
-    type:"nickname",
-    payload:input.value
-  }
-  socket.send(JSON.stringify(data))
-}
+  const input = welcome.querySelector("input")
+  roomName=input.value;
+  socket.emit("enterRoom",roomName,prompt("닉네임을 입력해주세요"),showRoom);
+  input.value="";
+})
+ 
+//닉정하고 닉입력칸 사라지고 채팅장 뜨기
+// nickname.addEventListener("submit", (event)=>{
+//   event.preventDefault();
+  // const input = nickname.querySelector("input")
+  // const nName = input.value
+  // socket.emit("nickname",nName,roomName,showAlelrt);
+  // input.value=""
+  // chatBox.hidden = false
 
-messageForm.addEventListener("submit",handleSubmit)
-nicknameForm.addEventListener("submit",handleNickNameSubmit)
+// })
+
+message.addEventListener("submit", (event)=>{
+  event.preventDefault();
+  const input = message.querySelector("input")
+  const messageContent = input.value;
+  socket.emit("newMessage",messageContent,roomName,updateChat)
+})
+
+socket.on("welcome",(msg)=>{
+  const li = document.createElement("li");
+  li.innerText = msg
+  chat.appendChild(li);
+})
+
+socket.on("newMessage",(msg)=>{
+  const li = document.createElement("li");
+  li.innerText = msg
+  chat.appendChild(li);
+})
