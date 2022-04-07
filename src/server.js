@@ -16,8 +16,24 @@ const httpServer = http.createServer(app);
 
 const wsServer = new Server(httpServer);
 
+function publicRooms() {
+    const {
+      sockets: {
+        adapter: { sids, rooms },
+      },
+    } = wsServer;
+    const publicRooms = [];
+    rooms.forEach((_, key) => {  
+      if (sids.get(key) === undefined) {
+        publicRooms.push(key);
+      }
+    });
+    return publicRooms;
+  }
+
 wsServer.on("connection",(socket)=>{
-    socket["nickname"]= "anon";
+    socket["nickname"]= "Anon";
+    console.log(wsServer)
     socket.onAny((event)=>{
         console.log(`socket.onAny에서 전달한 event값 :${event}`)
     })
@@ -28,6 +44,7 @@ wsServer.on("connection",(socket)=>{
         socket.to(roomName).emit("welcome",`${socket["nickname"]}`)//왜 welcome이 안뜨지
         done();
         // done으로 해당 클라이언트 웹페이지 변경
+        wsServer.sockets.emit("room_change", publicRooms());
     })
 
     socket.on("newMessage",(msg,room,done)=>{//foreach를 써보자
@@ -41,13 +58,6 @@ wsServer.on("connection",(socket)=>{
             socket.to(room).emit("bye",socket.nickname)
         })
     })
-
-    //닉네임 변경
-    // socket.on("nickname",(nickname,room,done)=>{
-    //     socket.to(room).emit("newMessage",`${socket["nickname"]}님이 ${nickname}(으)로 닉네임을 변경하였습니다.`)
-    //     socket["nickname"]=nickname
-    //     done();
-    // })
 })
 
 const handleListen = () => console.log(`Listening on http://localhost:3000`);
