@@ -9,7 +9,7 @@ const nickname = document.getElementById("nickname")
 const message = document.getElementById("message")
 const chatBox = document.getElementById("chatbox")
 const chat = document.getElementById("chat")
-
+const roomList = document.getElementById("roomList")
 // document.getElementById("chatbox").scrollTop = document.getElementById("chatbox").scrollHeight;
 // chatBox.scrollTop = chatBox.scrollHeight;
 // chatBox.scrollTo(0,chatBox.scrollHeight)
@@ -90,6 +90,17 @@ socket.on("newMessage",(msg)=>{
   li.innerText = msg
   chat.appendChild(li);
   chatBox.scrollTop = chatBox.scrollHeight;
+})
+
+socket.on("room_change",(rooms)=>{
+  // console.log(rooms)
+  roomList.innerHTML = ""
+  rooms.forEach(aRoom=>{
+    const li = document.createElement('li')
+    li.innerText = aRoom
+    roomList.appendChild(li)
+  })
+
 })
 
 socket.on("bye",(nName)=>{

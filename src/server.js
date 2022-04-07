@@ -38,8 +38,8 @@ wsServer.on("connection",(socket)=>{
         console.log(`socket.onAny에서 전달한 event값 :${event}`)
     })
 
-    socket.on("enterRoom",(roomName,newName,done)=>{//foreach를 써보자
-        socket.join(roomName)
+    socket.on("enterRoom",(roomName,newName,done)=>{
+        socket.join(roomName)//방 이름
         socket["nickname"]= newName;
         socket.to(roomName).emit("welcome",`${socket["nickname"]}`)//왜 welcome이 안뜨지
         done();
@@ -57,6 +57,9 @@ wsServer.on("connection",(socket)=>{
         socket.rooms.forEach((room)=>{
             socket.to(room).emit("bye",socket.nickname)
         })
+    })
+    socket.on("disconnect",()=>{
+      wsServer.sockets.emit("room_change", publicRooms());
     })
 })
 
