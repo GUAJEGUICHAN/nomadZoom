@@ -31,9 +31,17 @@ function publicRooms() {
     return publicRooms;
   }
 
+  function countRoom(roomName){
+    console.log('안뇽',wsServer.sockets.adapter.rooms)
+    console.log(wsServer.sockets.adapter.rooms.get(roomName)?.size)
+    return wsServer.sockets.adapter.rooms.get(roomName)?.size
+  }
+
 wsServer.on("connection",(socket)=>{
     socket["nickname"]= "Anon";
-    console.log(wsServer)
+    // console.log(wsServer)
+    wsServer.sockets.emit("room_change", publicRooms());
+
     socket.onAny((event)=>{
         console.log(`socket.onAny에서 전달한 event값 :${event}`)
     })
@@ -41,7 +49,8 @@ wsServer.on("connection",(socket)=>{
     socket.on("enterRoom",(roomName,newName,done)=>{
         socket.join(roomName)//방 이름
         socket["nickname"]= newName;
-        socket.to(roomName).emit("welcome",`${socket["nickname"]}`)//왜 welcome이 안뜨지
+        const numbers = countRoom(roomName)
+        wsServer.to(roomName).emit("welcome",`${socket["nickname"]}`,numbers)
         done();
         // done으로 해당 클라이언트 웹페이지 변경
         wsServer.sockets.emit("room_change", publicRooms());
@@ -56,7 +65,9 @@ wsServer.on("connection",(socket)=>{
     socket.on("disconnecting",()=>{
         socket.rooms.forEach((room)=>{
             socket.to(room).emit("bye",socket.nickname)
+            // wsServer.to(r)
         })
+
     })
     socket.on("disconnect",()=>{
       wsServer.sockets.emit("room_change", publicRooms());
